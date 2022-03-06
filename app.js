@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const passport = require('passport')
 const {User} = require('./models/user')
 const {Tweet} = require('./models/tweet')
+const dayjs = require('dayjs')
 
 const app = express()
 const port = 4000
@@ -18,8 +19,7 @@ app.use(passport.authenticate("session"))
 
 app.get('/', checkLogin, async(req, res)=>{
     if(!req.user) return res.redirect('/login')
-    const tweets = await Tweet.find({by: req.user}).populate('by')
-    console.log(tweets);
+    const tweets = await Tweet.find({author: req.user}).populate('author')
     res.render('index.ejs', {
         username: req.user.username,
         tweets
@@ -27,8 +27,8 @@ app.get('/', checkLogin, async(req, res)=>{
 })
 
 app.post('/', checkLogin, async(req, res)=>{
-    console.log(req.body)
-    const tweet = Tweet({story: req.body.story, by:req.user._id})
+    const tweet = Tweet({story: req.body.story, author:req.user._id, publishingDate: Date()})
+    console.log(tweet);
     await tweet.save()
     res.redirect('/')
 })
@@ -61,9 +61,15 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login'
 }))
 
-app.post('/logout', (req, res) => {
-    req.logout()
-    res.redirect('/login')
+// app.post('/logout', (req, res) => {
+//     req.logout()
+//     res.redirect('/login')
+// })
+
+app.get('/logout', (req, res)=>{
+    req.session.destroy(()=>{
+        res.redirect('/login')
+    })
 })
 
 function checkLogin(req, res, next) {

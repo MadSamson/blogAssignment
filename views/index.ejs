@@ -7,9 +7,10 @@
     <title><%= username%></title>
 </head>
 <body>
-    <form action="/logout" method="post">
+    <!-- <form action="/logout" method="post">
         <input type="submit" value="logout">
-    </form>
+    </form> -->
+    <%- include("navbar.ejs") %>
     <h1>hellow <%= username%></h1>
     <form action="/" method="post">
         <textarea name="story" id="" cols="30" rows="10" placeholder="What's happening"></textarea>
@@ -18,9 +19,11 @@
     </form>
         <div>
         <% tweets.forEach(item=>{ %>
-            <%= item.by.username%>
+            <%= item.author.username%>
             <br>
             <%= item.story%>
+            <br>
+            <%= item.publishingDate%>
             <hr>
         <% }) %>
         </div>
