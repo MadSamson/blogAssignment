@@ -11,5 +11,18 @@
         <input type="submit" value="logout">
     </form>
     <h1>hellow <%= username%></h1>
+    <form action="/" method="post">
+        <textarea name="story" id="" cols="30" rows="10" placeholder="What's happening"></textarea>
+        <br>
+        <input type="submit" value="tweet">
+    </form>
+        <div>
+        <% tweets.forEach(item=>{ %>
+            <%= item.by.username%>
+            <br>
+            <%= item.story%>
+            <hr>
+        <% }) %>
+        </div>
 </body>
 </html>
