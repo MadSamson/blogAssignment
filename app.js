@@ -1,5 +1,7 @@
 const express = require('express')
 const expressSession = require('express-session')
+const multer = require('multer')
+const path = require('path')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const {User} = require('./models/user')
@@ -9,6 +11,17 @@ const dayjs = require('dayjs')
 const app = express()
 const port = 4000
 
+// dictate multer where to store files
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, './public')
+    },
+    filename: function (req, file, cb) {
+      cb(null, file.originalname)
+    }
+})
+const upload = multer({ storage: storage })
+
 passport.use(User.createStrategy())
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
@@ -16,6 +29,7 @@ passport.deserializeUser(User.deserializeUser())
 app.use(express.urlencoded({extended: true}))
 app.use(expressSession({secret: "blasdkjfaöjsdf",saveUninitialized: false,resave: false}))
 app.use(passport.authenticate("session"))
+app.use(express.static('public'))
 
 app.get('/', checkLogin, async(req, res)=>{
     if(!req.user) return res.redirect('/login')
@@ -61,6 +75,32 @@ app.post('/login', passport.authenticate('local', {
     failureRedirect: '/login'
 }))
 
+app.get('/profile',checkLogin, (req, res)=>{
+    
+    res.render('profile.ejs', {
+        firstname: req.user.firstname,
+        lastname: req.user.lastname,
+        email: req.user.emailAdress,
+        profileImage: req.user.pfImage
+    })
+})
+
+app.post('/profile', checkLogin, upload.single('pfImage'), async(req, res)=>{
+    const {firstname, lastname, emailAdress} = req.body
+    console.log(req.file);
+    await User.findOneAndUpdate(
+        {username: req.user.username},
+        {$set:
+            {firstname,
+            lastname,
+            emailAdress,
+            pfImage: req.file.filename
+            }
+        }
+    )
+    res.redirect('/profile')
+})
+
 // app.post('/logout', (req, res) => {
 //     req.logout()
 //     res.redirect('/login')
@@ -81,3 +121,10 @@ function checkLogin(req, res, next) {
 
 mongoose.connect('mongodb://localhost/backend2')
 app.listen(port, ()=> console.log(`listening on port ${port}`))
+
+
+
+
+
+// referance
+// https://medium.com/swlh/how-to-upload-image-using-multer-in-node-js-f3aeffb90657
