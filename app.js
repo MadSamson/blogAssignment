@@ -3,6 +3,7 @@ const expressSession = require('express-session')
 const mongoose = require('mongoose')
 const passport = require('passport')
 const {User} = require('./models/user')
+const {Tweet} = require('./models/tweet')
 
 const app = express()
 const port = 4000
@@ -15,10 +16,21 @@ app.use(express.urlencoded({extended: true}))
 app.use(expressSession({secret: "blasdkjfaöjsdf",saveUninitialized: false,resave: false}))
 app.use(passport.authenticate("session"))
 
-app.get('/', checkLogin, (req, res)=>{
-    console.log(req.user)
+app.get('/', checkLogin, async(req, res)=>{
     if(!req.user) return res.redirect('/login')
-    res.render('index.ejs', {username: req.user.username})
+    const tweets = await Tweet.find({by: req.user}).populate('by')
+    console.log(tweets);
+    res.render('index.ejs', {
+        username: req.user.username,
+        tweets
+    })
+})
+
+app.post('/', checkLogin, async(req, res)=>{
+    console.log(req.body)
+    const tweet = Tweet({story: req.body.story, by:req.user._id})
+    await tweet.save()
+    res.redirect('/')
 })
 
 app.get('/register', (req, res)=>{
