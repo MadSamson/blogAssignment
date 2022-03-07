@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/styles.css">
     <title><%= username%></title>
 </head>
 <body>
@@ -12,20 +13,22 @@
     </form> -->
     <%- include("navbar.ejs") %>
     <h1>hellow <%= username%></h1>
-    <form action="/" method="post">
-        <textarea name="story" id="" cols="30" rows="10" placeholder="What's happening"></textarea>
-        <br>
-        <input type="submit" value="tweet">
-    </form>
-        <div>
+    <div class="pfForm">
+        <form action="/" method="post">
+            <textarea name="story" id="" cols="30" rows="10" placeholder="What's happening"></textarea>
+            <br>
+            <input type="submit" value="tweet">
+        </form>
+    </div>
+    <div class="tweet">
         <% tweets.forEach(item=>{ %>
-            <%= item.author.username%>
-            <br>
-            <%= item.story%>
-            <br>
+            <img src="images/<%= item.author.pfImage%>">
+            <em><%= item.author.username%></em>
             <%= item.publishingDate%>
+            <br>
+            <h3><%= item.story%></h3>
             <hr>
         <% }) %>
-        </div>
+    </div>
 </body>
 </html>

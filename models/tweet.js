@@ -1,7 +1,7 @@
 const mongoose = require('mongoose')
 
 const tweetSchema = new mongoose.Schema({
-    story: {type: String, required: true, maxLenth: 280},
+    story: {type: String, required: true, maxLenth: 140},
     author: {type: mongoose.Schema.Types.ObjectId, ref:'User'},
     publishingDate: {type:Date}
 })

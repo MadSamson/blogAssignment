@@ -8,13 +8,15 @@ const {User} = require('./models/user')
 const {Tweet} = require('./models/tweet')
 const dayjs = require('dayjs')
 
+var flash = require('express-flash');
+
 const app = express()
 const port = 4000
 
 // dictate multer where to store files
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-      cb(null, './public')
+      cb(null, './public/images')
     },
     filename: function (req, file, cb) {
       cb(null, file.originalname)
@@ -30,6 +32,7 @@ app.use(express.urlencoded({extended: true}))
 app.use(expressSession({secret: "blasdkjfaöjsdf",saveUninitialized: false,resave: false}))
 app.use(passport.authenticate("session"))
 app.use(express.static('public'))
+app.use(flash())
 
 app.get('/', checkLogin, async(req, res)=>{
     if(!req.user) return res.redirect('/login')
@@ -54,14 +57,17 @@ app.get('/register', (req, res)=>{
 app.post('/register', async(req, res)=>{
     try {
         let user = await User.findOne({username: req.body.username})
-        if (user) return res.status(400).redirect('/register')
+        if(user) {
+            req.flash('error', 'Username already exist')
+            return res.status(400).redirect('/register')
+        }
         
         user = new User({username: req.body.username})
         await user.setPassword(req.body.password);
         await user.save()
         res.redirect('/login')
     } catch (err) {
-        console.error(err);
+        req.flash('error', 'Failed')
         res.redirect('/register')
     }
 })
@@ -71,8 +77,9 @@ app.get('/login', (req, res)=>{
 })
 
 app.post('/login', passport.authenticate('local', {
-    successRedirect: '/',
-    failureRedirect: '/login'
+    failureFlash: true,
+    failureRedirect: '/login',
+    successRedirect: '/'
 }))
 
 app.get('/profile',checkLogin, (req, res)=>{
