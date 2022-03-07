@@ -1,14 +1,16 @@
 const express = require('express')
 const expressSession = require('express-session')
 const multer = require('multer')
-const path = require('path')
-const mongoose = require('mongoose')
+const flash = require('express-flash');
 const passport = require('passport')
+const mongoose = require('mongoose')
 const {User} = require('./models/user')
 const {Tweet} = require('./models/tweet')
-const dayjs = require('dayjs')
-
-var flash = require('express-flash');
+const aboutController = require('./controller/about')
+const registerController = require('./controller/register')
+const profileController = require('./controller/profile')
+const loginANDlogout = require('./controller/login&logout')
+const indexController = require('./controller/index')
 
 const app = express()
 const port = 4000
@@ -29,95 +31,26 @@ passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
 app.use(express.urlencoded({extended: true}))
-app.use(expressSession({secret: "blasdkjfaöjsdf",saveUninitialized: false,resave: false}))
+app.use(expressSession({secret: "mySecretIs:lalalalala",saveUninitialized: false,resave: false}))
 app.use(passport.authenticate("session"))
 app.use(express.static('public'))
 app.use(flash())
 
-app.get('/', checkLogin, async(req, res)=>{
-    if(!req.user) return res.redirect('/login')
-    const tweets = await Tweet.find({author: req.user}).populate('author')
-    res.render('index.ejs', {
-        username: req.user.username,
-        tweets
-    })
-})
 
-app.post('/', checkLogin, async(req, res)=>{
-    const tweet = Tweet({story: req.body.story, author:req.user._id, publishingDate: Date()})
-    console.log(tweet);
-    await tweet.save()
-    res.redirect('/')
-})
-
-app.get('/register', (req, res)=>{
-    res.render('register.ejs')
-})
-
-app.post('/register', async(req, res)=>{
-    try {
-        let user = await User.findOne({username: req.body.username})
-        if(user) {
-            req.flash('error', 'Username already exist')
-            return res.status(400).redirect('/register')
-        }
-        
-        user = new User({username: req.body.username})
-        await user.setPassword(req.body.password);
-        await user.save()
-        res.redirect('/login')
-    } catch (err) {
-        req.flash('error', 'Failed')
-        res.redirect('/register')
-    }
-})
-
-app.get('/login', (req, res)=>{
-    res.render('login.ejs')
-})
-
+app.get('/', checkLogin, indexController.index_get)
+app.post('/', checkLogin, indexController.index_post)
+app.get('/register', registerController.register_get)
+app.post('/register', registerController.register_post)
+app.get('/login', loginANDlogout.login_get)
 app.post('/login', passport.authenticate('local', {
     failureFlash: true,
     failureRedirect: '/login',
     successRedirect: '/'
 }))
-
-app.get('/profile',checkLogin, (req, res)=>{
-    
-    res.render('profile.ejs', {
-        firstname: req.user.firstname,
-        lastname: req.user.lastname,
-        email: req.user.emailAdress,
-        profileImage: req.user.pfImage
-    })
-})
-
-app.post('/profile', checkLogin, upload.single('pfImage'), async(req, res)=>{
-    const {firstname, lastname, emailAdress} = req.body
-    console.log(req.file);
-    await User.findOneAndUpdate(
-        {username: req.user.username},
-        {$set:
-            {firstname,
-            lastname,
-            emailAdress,
-            pfImage: req.file.filename
-            }
-        }
-    )
-    res.redirect('/profile')
-})
-
-// app.post('/logout', (req, res) => {
-//     req.logout()
-//     res.redirect('/login')
-// })
-
-app.get('/logout', (req, res)=>{
-    req.session.destroy(()=>{
-        res.redirect('/login')
-    })
-})
+app.get('/profile', checkLogin, profileController.profile_get)
+app.post('/profile', checkLogin, upload.single('pfImage'), profileController.profile_post)
+app.get('/logout', loginANDlogout.logout)
+app.get('/about', aboutController.about)
 
 function checkLogin(req, res, next) {
     if(req.user){
@@ -128,10 +61,6 @@ function checkLogin(req, res, next) {
 
 mongoose.connect('mongodb://localhost/backend2')
 app.listen(port, ()=> console.log(`listening on port ${port}`))
-
-
-
-
 
 // referance
 // https://medium.com/swlh/how-to-upload-image-using-multer-in-node-js-f3aeffb90657
