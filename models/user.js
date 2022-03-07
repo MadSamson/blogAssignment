@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
     firstname: { type: String },
     lastname: { type: String },
     emailAdress: { type: String },
-    pfImage: { type: String }
+    pfImage: { type: String, default: "PeterGriffin.jpeg"}
 })
 userSchema.plugin(passportLocalMongoose)
 

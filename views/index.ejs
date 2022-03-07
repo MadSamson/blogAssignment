@@ -20,15 +20,6 @@
             <input type="submit" value="tweet">
         </form>
     </div>
-    <div class="tweet">
-        <% tweets.forEach(item=>{ %>
-            <img src="images/<%= item.author.pfImage%>">
-            <em><%= item.author.username%></em>
-            <%= item.publishingDate%>
-            <br>
-            <h3><%= item.story%></h3>
-            <hr>
-        <% }) %>
-    </div>
+    <%- include("tweets.ejs") %>
 </body>
 </html>

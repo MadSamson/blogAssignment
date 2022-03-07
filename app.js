@@ -11,6 +11,8 @@ const registerController = require('./controller/register')
 const profileController = require('./controller/profile')
 const loginANDlogout = require('./controller/login&logout')
 const indexController = require('./controller/index')
+const tweetsController = require('./controller/tweets')
+const uspfController = require('./controller/usersprofile')
 
 const app = express()
 const port = 4000
@@ -39,6 +41,8 @@ app.use(flash())
 
 app.get('/', checkLogin, indexController.index_get)
 app.post('/', checkLogin, indexController.index_post)
+app.get('/tweets', tweetsController.tweetslist)
+app.get('/user/:id', uspfController.usersProfile)
 app.get('/register', registerController.register_get)
 app.post('/register', registerController.register_post)
 app.get('/login', loginANDlogout.login_get)

@@ -2,7 +2,7 @@ const {Tweet} = require('../models/tweet')
 
 const index_get = async (req, res)=>{
     if(!req.user) return res.redirect('/login')
-    const tweets = await Tweet.find({author: req.user}).populate('author')
+    const tweets = await Tweet.find({author: req.user}).populate('author').sort({publishingDate:-1})
     res.render('index.ejs', {
         username: req.user.username,
         tweets
