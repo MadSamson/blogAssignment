@@ -9,4 +9,29 @@ const usersProfile = async(req, res) => {
         userstweets
     })
 }
-module.exports = {usersProfile}
+const usersProfile_post = async(req, res)=>{
+    try {
+        // if(!req.user) return res.redirect('/login')
+        const usersIdToFollow = req.params.id
+        if(req.user._id==usersIdToFollow) return res.redirect('/')
+        await User.findByIdAndUpdate(req.user.id, { $push: { following: usersIdToFollow } })
+        await User.findByIdAndUpdate(usersIdToFollow, { $push: { followers: req.user._id } })
+        res.redirect(`/user/${usersIdToFollow}`)
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+const usersProfile_delete = async(req, res)=>{
+    try {
+        // if(!req.user) return res.redirect('/login')
+        const usersIdToFollow = req.params.id
+        if(req.user._id==usersIdToFollow) return res.redirect('/')
+        await User.findByIdAndUpdate(req.user.id, { $pull: { following: usersIdToFollow } })
+        await User.findByIdAndUpdate(usersIdToFollow, { $pull: { followers: req.user._id } })
+        res.redirect(`/user/${usersIdToFollow}`)
+    } catch (error) {
+        console.log(error);
+    }
+}
+module.exports = {usersProfile, usersProfile_post, usersProfile_delete}

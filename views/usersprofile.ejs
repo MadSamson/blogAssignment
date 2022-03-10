@@ -8,12 +8,29 @@
     <title><<%= user.username%>></title>
 </head>
 <body>
+    <nav>
+        <a href="/">Home</a> |
+        <a href="/profile">Profile</a> |
+        <a href="/register">Create New Account</a> |
+        <a href="/login">Login</a> |
+        <a href="/tweets">Tweets</a> |
+        <a href="/logout">Logout</a>
+        
+    </nav>
     <ul>
         <img src="/images/<%= user.pfImage%>" style="width: 150px">
         <li>Username: <%= user.username%></li>
-        <li>Firstname: <%= user.lastname%></li>
-        <li>Lastname <%= user.emailAdress%></li>
+        <li>Firstname: <%= user.firstname%></li>
+        <li>Lastname <%= user.lastname%></li>
     </ul>
+    <div>
+        <form action='/user/<%= user._id %>/follow' method="post">
+            <input type="submit" value="follow">
+        </form>
+        <form action='/user/<%= user._id %>/unfollow' method="post">
+            <input type="submit" value="unfollow">
+        </form>
+    </div>
     <div class="tweet">
         <% userstweets.forEach(item=>{ %>
                 <img src="/images/<%= item.author.pfImage%>">
