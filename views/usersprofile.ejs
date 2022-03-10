@@ -5,7 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/styles.css">
-    <title><<%= user.username%>></title>
+    <title><%= postOwner.username%></title>
 </head>
 <body>
     <nav>
@@ -18,18 +18,22 @@
         
     </nav>
     <ul>
-        <img src="/images/<%= user.pfImage%>" style="width: 150px">
-        <li>Username: <%= user.username%></li>
-        <li>Firstname: <%= user.firstname%></li>
-        <li>Lastname <%= user.lastname%></li>
+        <img src="/images/<%= postOwner.pfImage%>" style="width: 150px">
+        <li>Username: <%= postOwner.username%></li>
+        <li>Firstname: <%= postOwner.firstname%></li>
+        <li>Lastname <%= postOwner.lastname%></li>
     </ul>
     <div>
-        <form action='/user/<%= user._id %>/follow' method="post">
+        <!-- <form action='/user/<%= postOwner._id %>/follow' method="post">
             <input type="submit" value="follow">
         </form>
-        <form action='/user/<%= user._id %>/unfollow' method="post">
+        <form action='/user/<%= postOwner._id %>/unfollow' method="post">
             <input type="submit" value="unfollow">
+        </form> -->
+        <form action='/user/<%= postOwner._id %>/<%= status %>' method="post">
+        <input type="submit" value="<%= status %>">
         </form>
+
         <div class="error"><%= messages.error%></div>
     </div>
     <div class="tweet">
