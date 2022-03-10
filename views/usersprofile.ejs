@@ -30,6 +30,7 @@
         <form action='/user/<%= user._id %>/unfollow' method="post">
             <input type="submit" value="unfollow">
         </form>
+        <div class="error"><%= messages.error%></div>
     </div>
     <div class="tweet">
         <% userstweets.forEach(item=>{ %>

@@ -14,6 +14,10 @@ const usersProfile_post = async(req, res)=>{
         // if(!req.user) return res.redirect('/login')
         const usersIdToFollow = req.params.id
         if(req.user._id==usersIdToFollow) return res.redirect('/')
+        if(req.user.following.indexOf(usersIdToFollow)!==-1) {
+            req.flash('error', 'already following')
+            return res.redirect(`/user/${usersIdToFollow}`)
+        }
         await User.findByIdAndUpdate(req.user.id, { $push: { following: usersIdToFollow } })
         await User.findByIdAndUpdate(usersIdToFollow, { $push: { followers: req.user._id } })
         res.redirect(`/user/${usersIdToFollow}`)
