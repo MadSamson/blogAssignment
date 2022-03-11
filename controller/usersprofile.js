@@ -1,20 +1,39 @@
+const mongoose = require('mongoose')
 const {User} = require('../models/user')
 const {Tweet} = require('../models/tweet')
 
 
 const usersProfile = async(req, res) => {
-    let status = 'follow'
-    if(req.user){
-        req.user.following.includes(req.params.id) ? status = 'unfollow' : status = 'follow'
-    }
-    const userId = await req.params.id
-    const postOwner = await User.findOne({_id:userId})
-    const userstweets = await Tweet.find({author: userId}).populate('author').sort({publishingDate:-1})
-    res.render('usersprofile.ejs', {
-        postOwner,
-        userstweets,
-        status 
+    try {
+        let status = 'follow'
+        if(req.user){
+            req.user.following.includes(req.params.id) ? status = 'unfollow' : status = 'follow'
+        }
+        const userId = await req.params.id
+        const postOwner = await User.findOne({_id:userId})
+        const userstweets = await Tweet.find({author: userId}).populate('author').sort({publishingDate:-1})
+        
+        const query_followers = await User.aggregate([
+            {$match:{_id: mongoose.Types.ObjectId(userId)}},
+            {$project: {noflwr: {$size: '$followers'}}}
+        ])
+        const noFolloweres = query_followers[0].noflwr
+        const query_following = await User.aggregate([
+            {$match:{_id: mongoose.Types.ObjectId(userId)}},
+            {$project: {noflwin: {$size: '$following'}}}
+        ])
+        const noFollowing = query_following[0].noflwin
+        res.render('usersprofile.ejs', {
+            postOwner,
+            userstweets,
+            status,
+            noFolloweres,
+            noFollowing
     })
+    } catch (error) {
+        console.log(error)
+    }
+    
 }
 const usersProfile_post = async(req, res)=>{
     try {

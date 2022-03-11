@@ -24,17 +24,15 @@
         <li>Lastname <%= postOwner.lastname%></li>
     </ul>
     <div>
-        <!-- <form action='/user/<%= postOwner._id %>/follow' method="post">
-            <input type="submit" value="follow">
-        </form>
-        <form action='/user/<%= postOwner._id %>/unfollow' method="post">
-            <input type="submit" value="unfollow">
-        </form> -->
         <form action='/user/<%= postOwner._id %>/<%= status %>' method="post">
         <input type="submit" value="<%= status %>">
         </form>
-
         <div class="error"><%= messages.error%></div>
+    </div>
+    <div>
+        <em>followers: <%= noFolloweres %></em>
+        <br>
+        <em>following: <%= noFollowing %></em>
     </div>
     <div class="tweet">
         <% userstweets.forEach(item=>{ %>

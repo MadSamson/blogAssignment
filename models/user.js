@@ -6,8 +6,8 @@ const userSchema = new mongoose.Schema({
     lastname: { type: String },
     emailAdress: { type: String },
     pfImage: { type: String, default: "PeterGriffin.jpeg"},
-    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
+    followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: 0 }],
+    following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User', default: 0 }]
 })
 
 userSchema.plugin(passportLocalMongoose)
