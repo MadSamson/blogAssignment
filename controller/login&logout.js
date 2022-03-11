@@ -3,7 +3,7 @@ const login_get = (req, res)=>{
 }
 const logout = (req, res)=>{
     req.session.destroy(()=>{
-        res.redirect('/login')
+        res.redirect('/')
     })
 }
 module.exports = {login_get, logout}

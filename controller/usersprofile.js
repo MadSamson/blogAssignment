@@ -41,7 +41,8 @@ const usersProfile_post = async(req, res)=>{
         if(req.user._id==usersIdToFollow) return res.redirect('/')
         await User.findByIdAndUpdate(req.user.id, { $push: { following: usersIdToFollow } })
         await User.findByIdAndUpdate(usersIdToFollow, { $push: { followers: req.user._id } })
-        res.redirect(`/user/${usersIdToFollow}`)
+        // res.redirect(`/user/${usersIdToFollow}`)
+        res.redirect('/')
     } catch (error) {
         console.log(error);
     }
@@ -53,7 +54,7 @@ const usersProfile_delete = async(req, res)=>{
         if(req.user._id==usersIdToFollow) return res.redirect('/')
         await User.findByIdAndUpdate(req.user.id, { $pull: { following: usersIdToFollow } })
         await User.findByIdAndUpdate(usersIdToFollow, { $pull: { followers: req.user._id } })
-        res.redirect(`/user/${usersIdToFollow}`)
+        res.redirect('/')
     } catch (error) {
         console.log(error);
     }
