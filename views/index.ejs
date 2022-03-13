@@ -8,9 +8,6 @@
     <title><%= username%></title>
 </head>
 <body>
-    <!-- <form action="/logout" method="post">
-        <input type="submit" value="logout">
-    </form> -->
     <%- include("navbar.ejs") %>
     <h1>hellow <%= username%></h1>
     <div class="pfForm">
@@ -20,6 +17,17 @@
             <input type="submit" value="tweet">
         </form>
     </div>
-    <%- include("tweets.ejs") %>
+    <div class="tweet">
+        <% tweets.forEach(item=>{ %>
+            <a href="/user/<%= item.author._id%>">
+                <img src="/images/<%= item.author.pfImage%>">
+                <em><%= item.author.username%></em>
+            </a>
+            <%= item.publishingDate%>
+            <br>
+            <h3><%= item.story%></h3>
+            <hr>
+        <% }) %>
+    </div>
 </body>
 </html>
